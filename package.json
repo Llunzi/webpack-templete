@@ -81,7 +81,7 @@
     "dev": "cross-env NODE_ENV='development' webpack-dev-server --open --config build/webpack.dev.config.js --mode development",
     "build": "cross-env NODE_ENV='production' webpack --config build/webpack.config.prod.js --mode production",
     "start": "npm run dll && npm run dev",
-    "autofix": "eslint --fix ./src/",
+    "git": "/bin/bash  /Users/guanglunliu/Desktop/ekuaibao/webpack-template/git.sh",
     "prod": "npm run dll && npm run build"
   },
   "author": "",
