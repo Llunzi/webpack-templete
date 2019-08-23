@@ -1,0 +1,34 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry",
+        "modules": "false",
+        "debug": false
+      }
+    ],
+    ["@babel/preset-react"]
+  ],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": "css"
+      }
+    ],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    "add-module-exports",
+    "lodash",
+    ["@babel/plugin-transform-runtime", { "corejs": 2 }],
+    "@babel/plugin-proposal-export-default-from"
+  ]
+}
