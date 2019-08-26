@@ -1,47 +1,49 @@
-"use strict";
-const path = require("path");
-const chalk = require("chalk");
-const webpack = require("webpack");
-const SpriteLoaderPlugin = require("svg-sprite-loader/plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin"); // 通过 npm 安装
-const CleanWebpackPlugin = require("clean-webpack-plugin"); // 清空打包目录的插件
-const CopyWebpackPlugin = require("copy-webpack-plugin"); // 复制静态资源的插件
-const ProgressBarPlugin = require("progress-bar-webpack-plugin");
-const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
-const HappyPack = require("happypack");
-const os = require("os");
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
-const PurifyCssWebpack = require("purifycss-webpack");
-const glob = require("glob");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
-const MiniCssExtractPlugin = require("mini-css-extract-plugin"); //CSS文件单独提取出来
+'use strict'
+const path = require('path')
+const chalk = require('chalk')
+const webpack = require('webpack')
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin') // 通过 npm 安装
+const CleanWebpackPlugin = require('clean-webpack-plugin') // 清空打包目录的插件
+const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+const HappyPack = require('happypack')
+const os = require('os')
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
+const PurifyCssWebpack = require('purifycss-webpack')
+const glob = require('glob')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const MiniCssExtractPlugin = require('mini-css-extract-plugin') //CSS文件单独提取出来
 
 function resolve(dir) {
-  return path.join(__dirname, "..", dir);
+  return path.join(__dirname, '..', dir)
 }
 
 function assetsPath(_path_) {
-  let assetsSubDirectory;
-  if (process.env.NODE_ENV === "production") {
-    assetsSubDirectory = "static"; //可根据实际情况修改
+  let assetsSubDirectory
+  if (process.env.NODE_ENV === 'production') {
+    assetsSubDirectory = 'static' //可根据实际情况修改
   } else {
-    assetsSubDirectory = "static";
+    assetsSubDirectory = 'static'
   }
-  return path.posix.join(assetsSubDirectory, _path_);
+  return path.posix.join(assetsSubDirectory, _path_)
 }
 
 module.exports = {
-  context: path.resolve(__dirname, "../"),
-  mode: "production",
+  entry: {
+    main: './src/test.js'
+  },
+  context: path.resolve(__dirname, '../'),
+  mode: 'production',
   output: {
-    path: resolve("dist"),
-    filename: "[name].[hash].js"
+    path: resolve('dist'),
+    filename: '[name].[hash].js'
   },
   resolve: {
     // extensions: [".js", ".css", ".json"],
     alias: {
-      "@ant-design/icons/lib/dist": path.resolve(__dirname, "../src/icons.js")
+      '@ant-design/icons/lib/dist': path.resolve(__dirname, '../src/icons.js')
     } //配置别名可以加快webpack查找模块的速度
   },
   module: {
@@ -49,43 +51,26 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          "css-hot-loader",
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader"
-        ]
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
         // include: [resolve("src")], //限制范围，提高打包速度
         // exclude: /node_modules/
       },
       {
         test: /\.less$/,
-        use: [
-          "css-hot-loader",
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
-          "less-loader"
-        ]
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader']
         // include: [resolve("src")],
         // exclude: /node_modules/
       },
       {
         test: /\.scss$/,
-        use: [
-          "css-hot-loader",
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
-          "sass-loader"
-        ],
-        include: [resolve("src")],
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+        include: [resolve('src')],
         exclude: /node_modules/
       },
       {
         test: /\.jsx?$/,
-        loader: "happypack/loader?id=happy-babel-js",
-        include: [resolve("src")],
+        loader: 'happypack/loader?id=happy-babel-js',
+        include: [resolve('src')],
         exclude: /node_modules/
       },
       {
@@ -93,37 +78,37 @@ module.exports = {
         // url-loader 当图片较小的时候会把图片BASE64编码，大于limit参数的时候还是使用file-loader 进行拷贝
         test: /\.(png|jpg|jpeg|gif)/,
         use: {
-          loader: "url-loader",
+          loader: 'url-loader',
           options: {
-            name: assetsPath("images/[name].[hash:7].[ext]"), // 图片输出的路径
+            name: assetsPath('images/[name].[hash:7].[ext]'), // 图片输出的路径
             limit: 5 * 1024
           }
         },
-        exclude: path.resolve(__dirname, "../src/assets/")
+        exclude: path.resolve(__dirname, '../src/assets/')
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        loader: "url-loader",
+        loader: 'url-loader',
         options: {
           limit: 10000,
-          name: assetsPath("media/[name].[hash:7].[ext]")
+          name: assetsPath('media/[name].[hash:7].[ext]')
         }
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: "url-loader",
+        loader: 'url-loader',
         options: {
           limit: 10000,
-          name: assetsPath("fonts/[name].[hash:7].[ext]")
+          name: assetsPath('fonts/[name].[hash:7].[ext]')
         }
       },
       {
         test: /\.svg$/,
-        loader: "svg-sprite-loader",
-        include: path.resolve(__dirname, "../src/assets/"),
+        loader: 'svg-sprite-loader',
+        include: path.resolve(__dirname, '../src/assets/'),
         options: {
           extract: true,
-          name: assetsPath("svg/[name].[hash:7].[ext]")
+          name: assetsPath('svg/[name].[hash:7].[ext]')
           // spriteFilename: svgPath => `sprite${svgPath.substr(-4)}`
         }
       }
@@ -134,8 +119,8 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         commons: {
-          chunks: "initial",
-          name: "common",
+          chunks: 'initial',
+          name: 'common',
           minChunks: 2,
           maxInitialRequests: 5, // The default limit is too small to showcase the effect
           minSize: 30000, // This is example is too small to create commons chunks
@@ -146,42 +131,41 @@ module.exports = {
   },
   plugins: [
     new HappyPack({
-      id: "happy-babel-js",
-      loaders: ["babel-loader?cacheDirectory=true"],
+      id: 'happy-babel-js',
+      loaders: ['babel-loader?cacheDirectory=true'],
       threadPool: happyThreadPool
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
+      filename: '[name].css',
+      chunkFilename: '[id].css'
     }),
     new ProgressBarPlugin({
-      format:
-        "  build [:bar] " + chalk.green.bold(":percent") + " (:elapsed seconds)"
+      format: '  build [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)'
     }),
     new SpriteLoaderPlugin({
       plainSprite: true,
       spriteAttrs: {
-        id: "my-custom-sprite-id"
+        id: 'my-custom-sprite-id'
       }
     }),
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn|en_us/),
     new LodashModuleReplacementPlugin(),
     new PurifyCssWebpack({
-      paths: glob.sync(path.join(__dirname, "src/*.html"))
+      paths: glob.sync(path.join(__dirname, 'src/*.html'))
     }),
     new CopyWebpackPlugin([
       {
-        from: path.join(__dirname, "..", "static"),
-        to: path.join(__dirname, "..", "dist", "static"),
-        ignore: [".*"]
+        from: path.join(__dirname, '..', 'static'),
+        to: path.join(__dirname, '..', 'dist', 'static'),
+        ignore: ['.*']
       }
     ]),
-    new CleanWebpackPlugin(["dist"], {
-      root: path.join(__dirname, ".."),
-      exclude: ["manifest.json", "vendor.dll.js"],
+    new CleanWebpackPlugin(['dist'], {
+      root: path.join(__dirname, '..'),
+      exclude: ['manifest.json', 'vendor.dll.js'],
       verbose: true,
       dry: false
     })
     // new BundleAnalyzerPlugin(),
   ]
-};
+}

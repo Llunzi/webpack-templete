@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin') // 生成html的插件
 const webpack = require('webpack')
 const baseConfig = require('./webpack.base')
@@ -12,7 +12,7 @@ const devWebpackConfig = merge(baseConfig, {
   devServer: {
     inline: true, //打包后加入一个websocket客户端
     hot: true, //热加载
-    contentBase: path.join(__dirname, "..", "dist"), //静态文件根目录
+    contentBase: path.join(__dirname, '..', 'dist'), //静态文件根目录
     port: 8086, // 端口
     host: 'localhost',
     overlay: true,
@@ -26,9 +26,9 @@ const devWebpackConfig = merge(baseConfig, {
   plugins: [
     // 多入口的html文件用chunks这个参数来区分
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "..", "src", "index.html"),
-      filename: "index.html",
-      chunks: ["index", "common"],
+      template: path.resolve(__dirname, '..', 'src', 'index.html'),
+      filename: 'index.html',
+      chunks: ['index', 'common'],
       vendor: './vendor.dll.js', //与dll配置文件中output.fileName对齐
       hash: true, //防止缓存
       minify: {
