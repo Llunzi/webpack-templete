@@ -1,6 +1,6 @@
 'use strict'
 
-const path = require('path');
+const path = require("path");
 
 const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
 const HtmlWebpackPlugin = require('html-webpack-plugin') // 生成html的插件
@@ -13,7 +13,7 @@ module.exports = merge(baseConfig, {
   entry: {
     main: "./src/test.js"
   },
-  output:{
+  output: {
     publicPath: './' //这里要放的是静态资源CDN的地址(一般只在生产环境下配置)
   },
   plugins: [
@@ -49,6 +49,6 @@ module.exports = merge(baseConfig, {
     }),
     new webpack.DllReferencePlugin({
       manifest: path.resolve(__dirname, '..', 'dist', 'manifest.json')
-    }),
+    })
   ]
 })
