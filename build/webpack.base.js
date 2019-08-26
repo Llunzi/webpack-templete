@@ -8,9 +8,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin') // 清空打包目录
 const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
-const HappyPack = require('happypack')
 const os = require('os')
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
 const PurifyCssWebpack = require('purifycss-webpack')
 const glob = require('glob')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -69,7 +67,7 @@ module.exports = {
       },
       {
         test: /\.jsx?$/,
-        loader: 'happypack/loader?id=happy-babel-js',
+        use: 'babel-loader',
         include: [resolve('src')],
         exclude: /node_modules/
       },
@@ -130,11 +128,6 @@ module.exports = {
     }
   },
   plugins: [
-    new HappyPack({
-      id: 'happy-babel-js',
-      loaders: ['babel-loader?cacheDirectory=true'],
-      threadPool: happyThreadPool
-    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
