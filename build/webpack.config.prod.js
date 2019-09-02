@@ -8,10 +8,12 @@ const webpack = require('webpack')
 const baseConfig = require('./webpack.base')
 const merge = require('webpack-merge')
 const WebpackParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 module.exports = merge(baseConfig, {
   entry: {
-    main: './src/test.js'
+    main: './src/test.js',
+    app: './src/App.tsx'
   },
   output: {
     publicPath: './' //这里要放的是静态资源CDN的地址(一般只在生产环境下配置)
@@ -49,6 +51,11 @@ module.exports = merge(baseConfig, {
     }),
     new webpack.DllReferencePlugin({
       manifest: path.resolve(__dirname, '..', 'dist', 'manifest.json')
-    })
+    }),
+    // new CompressionPlugin({
+    //   test: /\.js$|\.html$|\.css/, //匹配文件名
+    //   threshold: 0, //对超过10k的数据进行压缩
+    //   deleteOriginalAssets: false //是否删除原文件
+    // })
   ]
 })

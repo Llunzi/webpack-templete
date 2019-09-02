@@ -5,6 +5,9 @@ const baseConfig = require('./webpack.base')
 const merge = require('webpack-merge')
 
 const devWebpackConfig = merge(baseConfig, {
+  entry: {
+    main: './src/App.tsx'
+  },
   output: {
     publicPath: '/'
   },
@@ -16,7 +19,16 @@ const devWebpackConfig = merge(baseConfig, {
     port: 8086, // 端口
     host: 'localhost',
     overlay: true,
-    compress: false // 服务器返回浏览器的时候是否启动gzip压缩
+    compress: false, // 服务器返回浏览器的时候是否启动gzip压缩
+    //解决跨域
+    proxy: {
+      '/api': {
+        target: 'https://www.ekuaibao.com',
+        pathRewrite: { '^/help': '' },
+        changeOrigin: true,
+        secure: true // 接受 运行在 https 上的服务
+      }
+    }
   },
   watchOptions: {
     ignored: /node_modules/, //忽略不用监听变更的目录
@@ -26,9 +38,9 @@ const devWebpackConfig = merge(baseConfig, {
   plugins: [
     // 多入口的html文件用chunks这个参数来区分
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '..', 'src', 'index.html'),
+      template: path.resolve(__dirname, '..', 'src', 'template.html'),
       filename: 'index.html',
-      chunks: ['index', 'common'],
+      chunks: ['index', 'common', 'main'],
       vendor: './vendor.dll.js', //与dll配置文件中output.fileName对齐
       hash: true, //防止缓存
       minify: {

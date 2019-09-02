@@ -1,18 +1,20 @@
 'use strict'
 const path = require('path')
+const { join, relative } = require('path')
 const chalk = require('chalk')
-const webpack = require('webpack')
+// const webpack = require('webpack')
 const SpriteLoaderPlugin = require('svg-sprite-loader/plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin') // 通过 npm 安装
+// const HtmlWebpackPlugin = require('html-webpack-plugin') // 通过 npm 安装
 const CleanWebpackPlugin = require('clean-webpack-plugin') // 清空打包目录的插件
 const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const os = require('os')
 const PurifyCssWebpack = require('purifycss-webpack')
-const glob = require('glob')
+const glob = require('glob-all')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const MiniCssExtractPlugin = require('mini-css-extract-plugin') //CSS文件单独提取出来
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
@@ -29,9 +31,6 @@ function assetsPath(_path_) {
 }
 
 module.exports = {
-  entry: {
-    main: './src/test.js'
-  },
   context: path.resolve(__dirname, '../'),
   mode: 'production',
   output: {
@@ -49,27 +48,27 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
-        // include: [resolve("src")], //限制范围，提高打包速度
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+        // include: [resolve('src')] //限制范围，提高打包速度
         // exclude: /node_modules/
       },
       {
         test: /\.less$/,
-        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader']
-        // include: [resolve("src")],
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader'],
+        include: [resolve('src')]
         // exclude: /node_modules/
-      },
-      {
-        test: /\.scss$/,
-        use: ['css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
-        include: [resolve('src')],
-        exclude: /node_modules/
       },
       {
         test: /\.jsx?$/,
         use: 'babel-loader',
         include: [resolve('src')],
         exclude: /node_modules/
+      },
+      {
+        test: /\.tsx?$/,
+        use: {
+          loader: 'awesome-typescript-loader'
+        }
       },
       {
         //file-loader 解决css等文件中引入图片路径的问题
@@ -115,13 +114,15 @@ module.exports = {
   optimization: {
     //webpack4.x的最新优化配置项，用于提取公共代码
     splitChunks: {
+      minSize: 30 * 30 * 1024,
+      minChunks: 1,
       cacheGroups: {
         commons: {
           chunks: 'initial',
           name: 'common',
-          minChunks: 2,
+          minChunks: 1,
           maxInitialRequests: 5, // The default limit is too small to showcase the effect
-          minSize: 30000, // This is example is too small to create commons chunks
+          minSize: 30 * 1024, // This is example is too small to create commons chunks
           reuseExistingChunk: true // 可设置是否重用该chunk（查看源码没有发现默认值）
         }
       }
@@ -129,8 +130,12 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css'
+    }),
+    new PurifyCssWebpack({
+      paths: glob.sync([join(__dirname, '../src/**/*.js'), join(__dirname, '../src/*.html')]),
+      minimize: true
     }),
     new ProgressBarPlugin({
       format: '  build [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)'
@@ -141,11 +146,11 @@ module.exports = {
         id: 'my-custom-sprite-id'
       }
     }),
-    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn|en_us/),
-    new LodashModuleReplacementPlugin(),
-    new PurifyCssWebpack({
-      paths: glob.sync(path.join(__dirname, 'src/*.html'))
+    // new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn|en_us/),
+    new MomentLocalesPlugin({
+      localesToKeep: ['es-us', 'zh-cn']
     }),
+    new LodashModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       {
         from: path.join(__dirname, '..', 'static'),
@@ -159,6 +164,6 @@ module.exports = {
       verbose: true,
       dry: false
     })
-    // new BundleAnalyzerPlugin(),
+    // , new BundleAnalyzerPlugin()
   ]
 }
